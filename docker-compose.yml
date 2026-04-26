@@ -1,0 +1,38 @@
+version: "3.9"
+
+volumes:
+  HNG-nginx-logs:    # THE critical shared volume
+  nextcloud-data:
+  detector-audit:
+
+networks:
+  hng-net:
+    driver: bridge
+
+services:
+
+  nextcloud:
+    image: kefaslungu/hng-nextcloud   # pre-built, never touch it
+    volumes:
+      - nextcloud-data:/var/www/html
+      - HNG-nginx-logs:/var/log/nginx:ro   # read-only, spec requirement
+    networks: [hng-net]
+
+  nginx:
+    image: nginx:1.25-alpine
+    ports: ["80:80"]
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - HNG-nginx-logs:/var/log/nginx     # nginx WRITES here
+    networks: [hng-net]
+
+  detector:
+    build: ./detector
+    network_mode: host     # MUST be host for iptables to affect real traffic
+    cap_add: [NET_ADMIN, NET_RAW]   # required to run iptables commands
+    environment:
+      - SLACK_WEBHOOK=${SLACK_WEBHOOK:-}
+    volumes:
+      - HNG-nginx-logs:/var/log/nginx:ro   # detector reads, never writes
+      - ./logs/detector:/var/log/detector  # audit log on host disk
+      - ./detector/config.yaml:/app/config.yaml:ro

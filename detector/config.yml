@@ -1,0 +1,31 @@
+log:
+  path: /var/log/nginx/hng-access.log
+  audit_path: /var/log/detector/audit.log
+
+slack:
+  webhook_url: ""   # set via SLACK_WEBHOOK env var instead
+
+detection:
+  window_seconds: 60
+  z_score_threshold: 3.0      # flag if z-score exceeds this
+  rate_multiplier: 5.0        # flag if rate > 5× baseline mean
+  error_surge_multiplier: 3.0 # 3× baseline error rate triggers tighter thresholds
+  error_surge_factor: 0.5     # multiply thresholds by this when surge detected
+  min_requests_to_flag: 5
+
+baseline:
+  window_minutes: 30
+  recalc_interval_seconds: 60
+  min_data_points: 5
+  prefer_current_hour: true
+  mean_floor: 0.01      # prevents division by zero on cold start
+  stddev_floor: 0.01
+
+blocking:
+  ban_durations: [600, 1800, 7200, -1]   # 10min, 30min, 2hr, permanent
+  iptables_chain: DETECTOR_BLOCK
+
+dashboard:
+  port: 8080
+  refresh_seconds: 3
+  top_ips_count: 10
