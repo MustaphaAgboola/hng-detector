@@ -1,5 +1,3 @@
-version: "3.9"
-
 volumes:
   HNG-nginx-logs:    # THE critical shared volume
   nextcloud-data:

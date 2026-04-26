@@ -1,6 +1,11 @@
 import asyncio
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
+
+
+log = logging.getLogger("audit")
+
 
 class AuditLogger:
     def __init__(self, cfg):
@@ -17,5 +22,9 @@ class AuditLogger:
         if extra:
             line += f" | {extra}"
         async with self._lock:
-            with open(self._path, "a") as fh:
-                fh.write(line + "\n")
+            try:
+                with open(self._path, "a") as fh:
+                    fh.write(line + "\n")
+            except Exception as exc:
+                log.warning(f"Audit write failed: {exc}")
+        log.info(f"AUDIT: {line}")
