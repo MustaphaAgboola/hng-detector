@@ -1,0 +1,1 @@
+**Blog post:** [How I Built a Real-Time Anomaly Detection Engine for a Cloud Storage Platform](https://medium.com/@mustaphaagboola1_88104/heres-a-comprehensive-beginner-friendly-blog-post-you-can-publish-directly-on-medium-f038a2ef6b5e)
